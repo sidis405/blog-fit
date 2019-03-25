@@ -10,8 +10,8 @@ $factory->define(Post::class, function (Faker $faker) {
     return [
         'title' => $title = $faker->sentence,
         'slug' => Str::slug($title),
-        'preview' => $faker->sentence,
-        'body' => $faker->sentences(10, true),
+        'preview' => $faker->paragraph,
+        'body' => $faker->paragraphs(10, true),
         'user_id' => factory(User::class),
         'category_id' => factory(Category::class),
     ];

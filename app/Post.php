@@ -6,6 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Post extends Model
 {
+    protected $guarded = ['tags'];
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
     public function tags()
     {
         return $this->belongsToMany(Tag::class)->withTimestamps();
@@ -24,5 +31,12 @@ class Post extends Model
     public function comments()
     {
         return $this->morphMany(Comment::class, 'commentable');
+    }
+
+    // Mutators
+    public function setTitleAttribute($title)
+    {
+        $this->attributes['title'] = $title;
+        $this->attributes['slug'] = str_slug($title);
     }
 }
