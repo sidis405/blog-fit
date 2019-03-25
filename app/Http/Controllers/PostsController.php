@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Tag;
 use App\Post;
 use App\Category;
+use Services\PostService;
 use Illuminate\Http\Request;
 use App\Http\Requests\PostRequest;
 
@@ -81,11 +82,9 @@ class PostsController extends Controller
      * @param  \App\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function update(PostRequest $request, Post $post)
+    public function update(PostRequest $request, Post $post, PostService $postService)
     {
-        $post->update($request->validated());
-
-        $post->tags()->sync($request->tags);
+        $postService->handleUpdate($request);
     }
 
     /**

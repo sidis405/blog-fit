@@ -39,4 +39,13 @@ class Post extends Model
         $this->attributes['title'] = $title;
         $this->attributes['slug'] = str_slug($title);
     }
+
+    /**
+     * Methods
+     */
+
+    public function addTags(array $tags)
+    {
+        $post->tags()->sync($tags);
+    }
 }
