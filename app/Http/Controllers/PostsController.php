@@ -2,20 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Tag;
 use App\Post;
-use App\Category;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Requests\PostRequest;
+use App\Repositories\PostsRepository;
 
 class PostsController extends Controller
 {
-    public function __construct()
+    protected $repo;
+
+    public function __construct(PostsRepository $repo)
     {
         $this->middleware('auth')->except('index', 'show');
         $this->middleware('can:update,post')->only('edit', 'update');
         $this->middleware('can:delete,post')->only('destroy');
+
+        $this->repo = $repo;
     }
 
     /**
@@ -23,23 +25,9 @@ class PostsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        // return date_parse('February')['month'];
-
-        $posts = Post::with('user', 'category', 'tags');
-
-        if ($year = request('year')) {
-            $posts = $posts->whereYear('created_at', $year);
-        }
-
-        if ($month = request('month')) {
-            $posts = $posts->whereMonth('created_at', Carbon::parse($month)->format('m'));
-        }
-
-        $posts =  $posts->latest()->paginate(15);
-
-
+        $posts = $this->repo->index($request);
         return view('posts.index', compact('posts'));
     }
 
@@ -50,9 +38,6 @@ class PostsController extends Controller
      */
     public function create()
     {
-        $categories = Category::all();
-        $tags = Tag::all();
-
         return view('posts.create')->withPost(new Post);
     }
 
