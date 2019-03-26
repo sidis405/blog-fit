@@ -45,4 +45,18 @@ class User extends Authenticatable
     {
         return $this->hasMany(Comment::class);
     }
+
+    /**
+     * Methods
+     */
+
+    public function isAdmin()
+    {
+        return $this->role == 'admin';
+    }
+
+    public function hasAuthored($post)
+    {
+        return $this->id == $post->user_id;
+    }
 }

@@ -4,6 +4,9 @@
         <small> by {{ $post->user->name }}</small>
         <small> on {{ $post->category->name }}</small>
         <small> {{ $post->created_at->format('d/m/Y H:i') }}</small>
+        @can('update', $post)
+            <small><a href="{{ route('posts.edit', $post) }}">[Edit]</a></small>
+        @endcan
     </div>
     <div class="card-body">
         {{ $post->preview }}

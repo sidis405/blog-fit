@@ -6,10 +6,18 @@ use App\Tag;
 use App\Post;
 use App\Category;
 use Illuminate\Http\Request;
+use App\Events\PostWasUpdated;
 use App\Http\Requests\PostRequest;
 
 class PostsController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth')->except('index', 'show');
+        $this->middleware('can:update,post')->only('edit', 'update');
+        $this->middleware('can:delete,post')->only('destroy');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -32,7 +40,7 @@ class PostsController extends Controller
         $categories = Category::all();
         $tags = Tag::all();
 
-        return view('posts.create', compact('categories', 'tags'));
+        return view('posts.create', compact('categories', 'tags'))->withPost(new Post);
     }
 
     /**
@@ -71,7 +79,10 @@ class PostsController extends Controller
      */
     public function edit(Post $post)
     {
-        //
+        $categories = Category::all();
+        $tags = Tag::all();
+
+        return view('posts.edit', compact('categories', 'tags', 'post'));
     }
 
     /**
@@ -86,6 +97,10 @@ class PostsController extends Controller
         $post->update($request->validated());
 
         $post->tags()->sync($request->tags);
+
+        event(new PostWasUpdated($post));
+
+        return redirect()->route('posts.show', $post);
     }
 
     /**
@@ -96,6 +111,8 @@ class PostsController extends Controller
      */
     public function destroy(Post $post)
     {
-        //
+        $post->tags()->sync([]);
+        $post->delete();
+        return redirect()->route('posts.index');
     }
 }
