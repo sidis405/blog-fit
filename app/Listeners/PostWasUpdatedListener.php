@@ -3,9 +3,8 @@
 namespace App\Listeners;
 
 use App\User;
-use App\Mail\PostUpdatedEmail;
 use \App\Events\PostWasUpdated;
-use Illuminate\Support\Facades\Mail;
+use App\Jobs\SendEmailPostWasUpdated;
 
 class PostWasUpdatedListener
 {
@@ -28,7 +27,7 @@ class PostWasUpdatedListener
         }
 
         if (! ($currentUser->isAdmin() && $currentUser->hasAuthored($post))) {
-            Mail::to($recipient)->send(new PostUpdatedEmail($post, $recipient, $sender));
+            SendEmailPostWasUpdated::dispatch($post, $recipient, $sender);
         }
     }
 }

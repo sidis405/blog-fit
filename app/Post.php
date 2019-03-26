@@ -48,4 +48,15 @@ class Post extends Model
     {
         $post->tags()->sync($tags);
     }
+
+    public function tagLinks()
+    {
+        // return $this->tags->map(function ($tag) {
+        //     return [$tag->name => route('tags.show', $tag)];
+        // })->collapse()->toArray();
+
+        return $this->tags->map(function ($tag) {
+            return "<a href='" . route('tags.show', $tag) . "'>{$tag->name}</a>";
+        })->implode(', ');
+    }
 }
